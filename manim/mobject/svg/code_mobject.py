@@ -160,7 +160,7 @@ class Code(VGroup):
         stroke_width=0,
         margin=0.3,
         indentation_chars="    ",
-        background="rectangle",  # or window
+        background="rectangle",  # or window, None for no background
         background_stroke_width=1,
         background_stroke_color=WHITE,
         corner_radius=0.2,
@@ -213,9 +213,11 @@ class Code(VGroup):
         self.gen_code_json()
 
         self.code = self.gen_colored_lines()
+        self.line_numbers = None
         if self.insert_line_no:
             self.line_numbers = self.gen_line_numbers()
             self.line_numbers.next_to(self.code, direction=LEFT, buff=self.line_no_buff)
+        self.background_mobject = None
         if self.background == "rectangle":
             if self.insert_line_no:
                 foreground = VGroup(self.code, self.line_numbers)
@@ -264,18 +266,9 @@ class Code(VGroup):
             x = (height - foreground.get_height()) / 2 - 0.1 * 3
             self.background_mobject.shift(foreground.get_center())
             self.background_mobject.shift(UP * x)
-        if self.insert_line_no:
-            VGroup.__init__(
-                self, self.background_mobject, self.line_numbers, self.code, **kwargs
-            )
-        else:
-            VGroup.__init__(
-                self,
-                self.background_mobject,
-                Dot(fill_opacity=0, stroke_opacity=0),
-                self.code,
-                **kwargs,
-            )
+        VGroup.__init__(self,
+                        *filter(lambda it: it is not None, [self.background_mobject, self.line_numbers, self.code]),
+                        **kwargs)
         self.move_to(np.array([0, 0, 0]))
 
     def ensure_valid_file(self):
