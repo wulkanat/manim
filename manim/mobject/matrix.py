@@ -22,6 +22,7 @@ from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.svg.tex_mobject import Tex
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
+from ..mobject.mobject import Mobject
 from ..utils.color import WHITE
 
 VECTOR_LABEL_SCALE_FACTOR = 0.8
@@ -101,7 +102,7 @@ class Matrix(VMobject):
             raise ValueError(
                 f"{self.__str__()} class requires a two-dimensional array!"
             )
-        mob_matrix = self.matrix_to_mob_matrix(matrix)
+        mob_matrix = self.matrix_to_mob_matrix(matrix) if isinstance(matrix[0][0], Mobject) else matrix
         self.organize_mob_matrix(mob_matrix)
         self.elements = VGroup(*mob_matrix.flatten())
         self.add(self.elements)
